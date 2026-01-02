@@ -24,4 +24,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     boolean existsByIsbn(String isbn);
 
     void deleteByIsbn(String isbn);
+
+    List<Book> findByTitleContainingIgnoreCase(String title);
 }

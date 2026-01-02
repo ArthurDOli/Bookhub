@@ -1,13 +1,12 @@
 package com.bookhub.bookhub.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
+import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+@Data
 @Entity
 public class Book {
     @Id
@@ -29,5 +28,23 @@ public class Book {
     @Column(columnDefinition = "integer default 1")
     private Integer availableCopies;
 
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<Loan> loans = new ArrayList<>();
+
     private Integer publicationYear;
+
+    public boolean isAvailable() {
+        return availableCopies > 0;
+    }
+
+    public void borrow() {
+        if (availableCopies <= 0) {
+            throw new IllegalStateException("No copies available");
+        }
+        availableCopies--;
+    }
+
+    public void returnBook() {
+        availableCopies++;
+    }
 }

@@ -127,4 +127,11 @@ public class BookServiceImpl implements BookService {
 
         bookRepository.save(book);
     }
+
+    @Override
+    public boolean isBookAvailable(Long bookId) {
+        return bookRepository.findById(bookId)
+                .map(Book::isAvailable)
+                .orElse(false);
+    }
 }

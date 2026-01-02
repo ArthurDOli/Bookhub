@@ -87,4 +87,44 @@ public class BookServiceImpl implements BookService {
     public List<Book> searchBooks(String keyword) {
         return bookRepository.findByTitleContainingIgnoreCase(keyword);
     }
+
+    @Override
+    public List<Book> getBooksByAuthor(String author) {
+        return bookRepository.findByAuthor(author);
+    }
+
+    @Override
+    public Optional<Book> getBookByIsbn(String isbn) {
+        return bookRepository.findByIsbn(isbn);
+    }
+
+    @Override
+    public void incrementCopies(Long bookId, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found: " + bookId));
+
+        book.setAvailableCopies(book.getAvailableCopies() + quantity);
+        book.setTotalCopies(book.getTotalCopies() + quantity);
+
+        bookRepository.save(book);
+    }
+
+    @Override
+    public void decrementCopies(Long bookId, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found: " + bookId));
+
+        book.setAvailableCopies(book.getAvailableCopies() - quantity);
+        book.setTotalCopies(book.getTotalCopies() - quantity);
+
+        bookRepository.save(book);
+    }
 }

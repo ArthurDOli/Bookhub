@@ -92,10 +92,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
-        if (user.getRole() == newRole) {
-            throw new IllegalArgumentException("This is already the User's role.");
-        }
-
         user.setRole(newRole);
 
         return userRepository.save(user);

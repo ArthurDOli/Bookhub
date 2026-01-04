@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -154,7 +156,16 @@ public class LoanServiceImpl implements LoanService {
         loan.setRenewalCount(loan.getRenewalCount() + 1);
     }
 
-//    List<Loan> getActiveLoansByUser(Long userId);
+
+    @Override
+    public List<Loan> getActiveLoansByUser(Long userId) {
+        User user = findUser(userId);
+
+        return user.getLoans().stream()
+                .filter(loan -> loan.getStatus() == Loan.LoanStatus.ACTIVE)
+                .collect(Collectors.toList());
+    }
+
 //    List<Loan> getOverdueLoans();
 //    Loan getLoanById(Long loanId);
 //    boolean isLoanOverdue(Long loanId);

@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -151,22 +150,25 @@ public class LoanServiceImpl implements LoanService {
 
     private void processExtension(Loan loan, int additionalDays) {
         LocalDate newDueDate = loan.getDueDate().plusDays(additionalDays);
-        loan.setLoanDate(newDueDate);
+        loan.setDueDate(newDueDate);
 
         loan.setRenewalCount(loan.getRenewalCount() + 1);
     }
-
 
     @Override
     public List<Loan> getActiveLoansByUser(Long userId) {
         User user = findUser(userId);
 
-        return user.getLoans().stream()
-                .filter(loan -> loan.getStatus() == Loan.LoanStatus.ACTIVE)
-                .collect(Collectors.toList());
+        return loanRepository.findByUserIdAndStatus(userId, Loan.LoanStatus.ACTIVE);
     }
 
-//    List<Loan> getOverdueLoans();
-//    Loan getLoanById(Long loanId);
-//    boolean isLoanOverdue(Long loanId);
+    @Override
+    public List<Loan> getOverdueLoans() {
+        return loanRepository.findByStatus(Loan.LoanStatus.OVERDUE);
+    }
+
+    @Override
+    public boolean isLoanOverdue(Long loanId) {
+        return validationService.isLoanOverdue(findLoan(loanId));
+    }
 }

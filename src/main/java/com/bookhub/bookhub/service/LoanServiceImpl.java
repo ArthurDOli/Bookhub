@@ -85,7 +85,7 @@ public class LoanServiceImpl implements LoanService {
 
     private void validateLoanCanBeReturned(Loan loan) {
         if (loan.getStatus() == Loan.LoanStatus.RETURNED) {
-            throw new IllegalArgumentException(
+            throw new IllegalStateException(
                     "Loan already returned on: " + loan.getReturnDate()
             );
         }
@@ -99,10 +99,63 @@ public class LoanServiceImpl implements LoanService {
         loan.getBook().returnBook();
     }
 
-//    Loan returnLoan(Long loanId);
+
+
+    @Override
+    public Loan extendLoan(Long loanId, int additionalDays) {
+        validateAdditionalDays(additionalDays);
+
+        Loan loan = findLoan(loanId);
+        validateLoanCanBeExtended(loan);
+
+        processExtension(loan, additionalDays);
+
+        return loanRepository.save(loan);
+    }
+
+    private void validateAdditionalDays(int additionalDays) {
+        if (additionalDays <= 0) {
+            throw new IllegalStateException(
+                    "Additional days must be positive"
+            );
+        }
+    }
+
+    private void validateLoanCanBeExtended(Loan loan) {
+        if (loan.getRenewalCount() >= 3) {
+            throw new IllegalStateException(
+                    "Maximum renewals reached: " + loan.getRenewalCount()
+            );
+        }
+
+        if (loan.getStatus() == Loan.LoanStatus.OVERDUE) {
+            throw new IllegalStateException(
+                    "Cannot extend overdue loan"
+            );
+        }
+
+        if (loan.getStatus() == Loan.LoanStatus.RETURNED) {
+            throw new IllegalStateException(
+                    "Cannot extend returned loan"
+            );
+        }
+
+        if (loan.getStatus() != Loan.LoanStatus.ACTIVE) {
+            throw new IllegalStateException(
+                    "Can only extend active loans. Current status: " + loan.getStatus()
+            );
+        }
+    }
+
+    private void processExtension(Loan loan, int additionalDays) {
+        LocalDate newDueDate = loan.getDueDate().plusDays(additionalDays);
+        loan.setLoanDate(newDueDate);
+
+        loan.setRenewalCount(loan.getRenewalCount() + 1);
+    }
+
 //    List<Loan> getActiveLoansByUser(Long userId);
 //    List<Loan> getOverdueLoans();
-//    Loan extendLoan(Long loanId, int additionalDays);
 //    Loan getLoanById(Long loanId);
 //    boolean isLoanOverdue(Long loanId);
 }

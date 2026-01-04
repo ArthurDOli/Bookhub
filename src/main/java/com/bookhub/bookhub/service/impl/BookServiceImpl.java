@@ -1,7 +1,8 @@
-package com.bookhub.bookhub.service;
+package com.bookhub.bookhub.service.impl;
 
 import com.bookhub.bookhub.entity.Book;
 import com.bookhub.bookhub.repository.BookRepository;
+import com.bookhub.bookhub.service.BookService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

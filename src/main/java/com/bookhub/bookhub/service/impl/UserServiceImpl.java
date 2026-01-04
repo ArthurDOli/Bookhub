@@ -1,9 +1,10 @@
-package com.bookhub.bookhub.service;
+package com.bookhub.bookhub.service.impl;
 
 import com.bookhub.bookhub.entity.Loan;
 import com.bookhub.bookhub.entity.User;
 import com.bookhub.bookhub.exception.ResourceNotFoundException;
 import com.bookhub.bookhub.repository.UserRepository;
+import com.bookhub.bookhub.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

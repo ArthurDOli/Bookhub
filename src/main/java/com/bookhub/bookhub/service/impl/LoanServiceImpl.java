@@ -1,4 +1,4 @@
-package com.bookhub.bookhub.service;
+package com.bookhub.bookhub.service.impl;
 
 import com.bookhub.bookhub.entity.Book;
 import com.bookhub.bookhub.entity.Loan;
@@ -8,6 +8,7 @@ import com.bookhub.bookhub.factory.LoanFactory;
 import com.bookhub.bookhub.repository.BookRepository;
 import com.bookhub.bookhub.repository.LoanRepository;
 import com.bookhub.bookhub.repository.UserRepository;
+import com.bookhub.bookhub.service.LoanService;
 import com.bookhub.bookhub.service.validation.LoanValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

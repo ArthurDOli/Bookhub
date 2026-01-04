@@ -10,6 +10,5 @@ public interface LoanService {
     List<Loan> getActiveLoansByUser(Long userId);
     List<Loan> getOverdueLoans();
     Loan extendLoan(Long loanId, int additionalDays);
-    Loan getLoanById(Long loanId);
     boolean isLoanOverdue(Long loanId);
 }

@@ -32,6 +32,9 @@ public class Loan {
     @Column(nullable = false)
     private LoanStatus status;
 
+    @Column(nullable = false)
+    private int renewalCount = 0;
+
     public enum LoanStatus {
         ACTIVE,
         RETURNED,

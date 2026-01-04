@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -65,10 +67,37 @@ public class LoanServiceImpl implements LoanService {
 
 
 
-//    @Override
-//    public Loan returnLoan(Long loanId) {
-//
-//    }
+    @Override
+    public Loan returnLoan(Long loanId) {
+        Loan loan = findLoan(loanId);
+
+        validateLoanCanBeReturned(loan);
+
+        processReturn(loan);
+
+        return loanRepository.save(loan);
+    }
+
+    private Loan findLoan(Long loanId) {
+        return loanRepository.findById(loanId)
+                .orElseThrow(() -> new ResourceNotFoundException("Loan", loanId));
+    }
+
+    private void validateLoanCanBeReturned(Loan loan) {
+        if (loan.getStatus() == Loan.LoanStatus.RETURNED) {
+            throw new IllegalArgumentException(
+                    "Loan already returned on: " + loan.getReturnDate()
+            );
+        }
+    }
+
+    private void processReturn(Loan loan) {
+        loan.setReturnDate(LocalDate.now());
+
+        loan.setStatus(Loan.LoanStatus.RETURNED);
+
+        loan.getBook().returnBook();
+    }
 
 //    Loan returnLoan(Long loanId);
 //    List<Loan> getActiveLoansByUser(Long userId);

@@ -46,5 +46,9 @@ public class Book {
 
     public void returnBook() {
         availableCopies++;
+
+        if (this.availableCopies > this.totalCopies) {
+            this.availableCopies = this.totalCopies;
+        }
     }
 }

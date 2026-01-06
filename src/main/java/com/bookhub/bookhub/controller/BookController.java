@@ -30,15 +30,15 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
+    public ResponseEntity<?> createBook(@Valid @RequestBody Book book) {
         Book createdBook = bookService.createBook(book);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
+        return ResponseEntity.status(HttpStatus.CREATED).body(book);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @Valid @RequestBody Book bookDetails) {
         Book updatedBook = bookService.updateBook(id, bookDetails);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(updatedBook);
     }
 
     @DeleteMapping("/{id}")
@@ -72,8 +72,14 @@ public class BookController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}/availability")
-    public ResponseEntity<Boolean> checkAvailability(@PatchMapping Long id) {
+    @PatchMapping("/{id}/decrement-copies")
+    public ResponseEntity<Void> decrementCopies(@PathVariable Long id, @RequestParam int quantity) {
+        bookService.decrementCopies(id,quantity);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/available")
+    public ResponseEntity<Boolean> isBookAvailable(@PathVariable Long id) {
         boolean isAvailable = bookService.isBookAvailable(id);
         return ResponseEntity.ok(isAvailable);
     }

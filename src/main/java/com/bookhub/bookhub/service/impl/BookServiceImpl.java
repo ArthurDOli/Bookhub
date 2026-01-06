@@ -56,7 +56,7 @@ public class BookServiceImpl implements BookService {
         if (bookDetails.getTotalCopies() != null) {
             int diff = bookDetails.getTotalCopies() - book.getTotalCopies();
             book.setTotalCopies(bookDetails.getTotalCopies());
-            book.setAvailableCopies(bookDetails.getAvailableCopies() + diff);
+            book.setAvailableCopies(book.getAvailableCopies() + diff);
         }
 
         return bookRepository.save(book);

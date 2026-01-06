@@ -46,4 +46,35 @@ public class BookController {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Book>> searchBooks(@RequestParam String keyword) {
+        List<Book> books = bookService.searchBooks(keyword);
+        return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/author/{author}")
+    public ResponseEntity<List<Book>> getBooksByAuthor(@PathVariable String author) {
+        List<Book> books = bookService.getBooksByAuthor(author);
+        return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/isbn/{isbn}")
+    public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
+        return bookService.getBookByIsbn(isbn)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/increment-copies")
+    public ResponseEntity<Void> incrementCopies(@PathVariable Long id, @RequestParam int quantity) {
+        bookService.incrementCopies(id, quantity);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/availability")
+    public ResponseEntity<Boolean> checkAvailability(@PatchMapping Long id) {
+        boolean isAvailable = bookService.isBookAvailable(id);
+        return ResponseEntity.ok(isAvailable);
+    }
 }

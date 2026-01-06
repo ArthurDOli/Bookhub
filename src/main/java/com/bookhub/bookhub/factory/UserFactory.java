@@ -1,9 +1,12 @@
 package com.bookhub.bookhub.factory;
 
+import com.bookhub.bookhub.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserFactory {
+    private static final User.Role DEFAULT_ROLE = User.Role.READER;
+
     private boolean isValidEmail(String email) {
         if (email == null) return false;
 
@@ -20,5 +23,35 @@ public class UserFactory {
         }
 
         return true;
+    }
+
+    public User createUser(String name, String email, String password, User.Role role) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be empty");
+        }
+
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be empty");
+        }
+
+        if (!isValidEmail(email)) {
+            throw new IllegalArgumentException("Invalid email format: " + email);
+        }
+
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password musb be at least 6 characters");
+        }
+
+        User user = new User();
+        user.setName(name.trim());
+        user.setEmail(email.trim().toLowerCase());
+        user.setPassword(password);
+        user.setRole(role != null ? role : DEFAULT_ROLE);
+
+        return user;
+    }
+
+    public User createLibrarian(String name, String email, String password) {
+        return createUser(name, email, password, User.Role.LIBRARIAN);
     }
 }

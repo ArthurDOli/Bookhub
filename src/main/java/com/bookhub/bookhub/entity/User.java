@@ -1,6 +1,9 @@
 package com.bookhub.bookhub.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -14,13 +17,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, message = "Password mus be at least 6 characters")
     private String password;
 
     @Enumerated(EnumType.STRING)

@@ -39,7 +39,7 @@ public class UserFactory {
         }
 
         if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Password musb be at least 6 characters");
+            throw new IllegalArgumentException("Password must be at least 6 characters");
         }
 
         User user = new User();

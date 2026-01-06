@@ -5,6 +5,7 @@ import com.bookhub.bookhub.entity.User;
 import com.bookhub.bookhub.exception.ResourceNotFoundException;
 import com.bookhub.bookhub.repository.UserRepository;
 import com.bookhub.bookhub.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(User user) {
+    public User registerUser(@Valid User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("E-mail already registered");
         }

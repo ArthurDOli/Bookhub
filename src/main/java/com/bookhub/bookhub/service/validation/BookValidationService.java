@@ -54,4 +54,28 @@ public class BookValidationService {
             }
         }
     }
+
+    public void validateBookCanBeBorrowed(Book book) {
+        if (book == null) {
+            throw new IllegalStateException("Book cannot be null");
+        }
+
+        if (!book.isAvailable()) {
+            throw new IllegalStateException(
+                    "Book is not available for borrowing: " + book.getTitle()
+            );
+        }
+    }
+
+    public void validateBookCanBeReturned(Book book) {
+        if (book == null) {
+            throw new IllegalStateException("Book cannot be null");
+        }
+
+        if (book.getAvailableCopies() >= book.getTotalCopies()) {
+            throw new IllegalStateException(
+                    "All copies are already available. Book: " + book.getTitle()
+            );
+        }
+    }
 }

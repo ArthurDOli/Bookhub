@@ -6,6 +6,7 @@ import com.bookhub.bookhub.exception.ResourceNotFoundException;
 import com.bookhub.bookhub.repository.UserRepository;
 import com.bookhub.bookhub.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +17,11 @@ import java.util.Optional;
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -30,6 +33,9 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() == null) {
             user.setRole(User.Role.READER);
         }
+
+        String encryptedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encryptedPassword);
 
         return userRepository.save(user);
     }
@@ -48,7 +54,8 @@ public class UserServiceImpl implements UserService {
         }
 
         if (userDetails.getPassword() != null) {
-            user.setPassword(userDetails.getPassword());
+            String encryptedPassword = passwordEncoder.encode(userDetails.getPassword());
+            user.setPassword(encryptedPassword);
         }
 
         return userRepository.save(user);

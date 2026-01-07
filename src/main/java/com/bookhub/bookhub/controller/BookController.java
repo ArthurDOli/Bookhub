@@ -30,9 +30,9 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createBook(@Valid @RequestBody Book book) {
+    public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
         Book createdBook = bookService.createBook(book);
-        return ResponseEntity.status(HttpStatus.CREATED).body(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
     }
 
     @PutMapping("/{id}")
@@ -78,7 +78,7 @@ public class BookController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}/available")
+    @GetMapping("/{id}/available")
     public ResponseEntity<Boolean> isBookAvailable(@PathVariable Long id) {
         boolean isAvailable = bookService.isBookAvailable(id);
         return ResponseEntity.ok(isAvailable);

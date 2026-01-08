@@ -1,6 +1,7 @@
 package com.bookhub.bookhub.service.impl;
 
 import com.bookhub.bookhub.dto.UserResponseDTO;
+import com.bookhub.bookhub.dto.UserUpdateDTO;
 import com.bookhub.bookhub.dto.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.Loan;
 import com.bookhub.bookhub.entity.User;
@@ -46,25 +47,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Long id, User userDetails) {
+    public UserResponseDTO updateUser(Long id, UserUpdateDTO userDetails) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
 
-        if (userDetails.getEmail() != null &&
-            !userDetails.getEmail().equals(user.getEmail())) {
-            throw new IllegalArgumentException("Email can't be altered");
+        if (userDetails.getName() != null && !userDetails.getPassword().trim().isEmpty()) {
+            user.setName(userDetails.getName().trim());
         }
 
-        if (userDetails.getName() != null) {
-            user.setName(userDetails.getName());
-        }
-
-        if (userDetails.getPassword() != null) {
+        if (userDetails.getPassword() != null && !userDetails.getPassword().trim().isEmpty()) {
             String encryptedPassword = passwordEncoder.encode(userDetails.getPassword());
             user.setPassword(encryptedPassword);
         }
 
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+
+        return new UserResponseDTO(updatedUser);
     }
 
     @Override

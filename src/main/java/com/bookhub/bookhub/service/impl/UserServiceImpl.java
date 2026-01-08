@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
 
-        if (userDetails.getName() != null && !userDetails.getPassword().trim().isEmpty()) {
+        if (userDetails.getName() != null && !userDetails.getName().trim().isEmpty()) {
             user.setName(userDetails.getName().trim());
         }
 
@@ -81,18 +81,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserResponseDTO> getUserById(Long id) {
+        return userRepository.findById(id)
+                .map(UserResponseDTO::new);
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Optional<UserResponseDTO> getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(UserResponseDTO::new);
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(UserResponseDTO::new)
+                .toList();
     }
 
     @Override
@@ -101,12 +105,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changeUserRole(Long userId, User.Role newRole) {
+    public UserResponseDTO changeUserRole(Long userId, User.Role newRole) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
         user.setRole(newRole);
 
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+
+        return new UserResponseDTO(updatedUser);
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    UserResponseDTO registerUser(UserCreateRequest user);
+    UserResponseDTO registerUser(UserCreateRequest userRequest);
     UserResponseDTO updateUser(Long id, UserUpdateDTO userDetails);
     void deleteUser(Long id);
     Optional<UserResponseDTO> getUserById(Long id);

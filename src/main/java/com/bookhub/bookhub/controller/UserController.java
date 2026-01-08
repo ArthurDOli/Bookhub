@@ -1,6 +1,7 @@
 package com.bookhub.bookhub.controller;
 
 import com.bookhub.bookhub.dto.UserResponseDTO;
+import com.bookhub.bookhub.dto.UserUpdateDTO;
 import com.bookhub.bookhub.dto.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.User;
 import com.bookhub.bookhub.service.UserService;
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -38,8 +39,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
-        User updatedUser = userService.updateUser(id, userDetails);
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userDetails) {
+        UserResponseDTO updatedUser = userService.updateUser(id, userDetails);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -50,15 +51,15 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<UserResponseDTO> getUserByEmail(@PathVariable String email) {
         return userService.getUserByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{id}/role")
-    public ResponseEntity<User> changeUserRole(@PathVariable Long id, @RequestParam User.Role role) {
-        User updatedUser = userService.changeUserRole(id, role);
+    public ResponseEntity<UserResponseDTO> changeUserRole(@PathVariable Long id, @RequestParam User.Role role) {
+        UserResponseDTO updatedUser = userService.changeUserRole(id, role);
         return ResponseEntity.ok(updatedUser);
     }
 

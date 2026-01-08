@@ -1,6 +1,6 @@
 package com.bookhub.bookhub.service.impl;
 
-import com.bookhub.bookhub.dto.user.response.UserResponseDTO;
+import com.bookhub.bookhub.dto.user.response.UserResponse;
 import com.bookhub.bookhub.dto.user.request.UserUpdateRequest;
 import com.bookhub.bookhub.dto.user.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.Loan;
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO registerUser(UserCreateRequest userRequest) {
+    public UserResponse registerUser(UserCreateRequest userRequest) {
         if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new IllegalArgumentException("E-mail already registered");
         }
@@ -42,11 +42,11 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
-        return new UserResponseDTO(savedUser);
+        return new UserResponse(savedUser);
     }
 
     @Override
-    public UserResponseDTO updateUser(Long id, UserUpdateRequest userDetails) {
+    public UserResponse updateUser(Long id, UserUpdateRequest userDetails) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
 
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
 
         User updatedUser = userRepository.save(user);
 
-        return new UserResponseDTO(updatedUser);
+        return new UserResponse(updatedUser);
     }
 
     @Override
@@ -80,21 +80,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserResponseDTO> getUserById(Long id) {
+    public Optional<UserResponse> getUserById(Long id) {
         return userRepository.findById(id)
-                .map(UserResponseDTO::new);
+                .map(UserResponse::new);
     }
 
     @Override
-    public Optional<UserResponseDTO> getUserByEmail(String email) {
+    public Optional<UserResponse> getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .map(UserResponseDTO::new);
+                .map(UserResponse::new);
     }
 
     @Override
-    public List<UserResponseDTO> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(UserResponseDTO::new)
+                .map(UserResponse::new)
                 .toList();
     }
 
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO changeUserRole(Long userId, User.Role newRole) {
+    public UserResponse changeUserRole(Long userId, User.Role newRole) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
@@ -112,6 +112,6 @@ public class UserServiceImpl implements UserService {
 
         User updatedUser = userRepository.save(user);
 
-        return new UserResponseDTO(updatedUser);
+        return new UserResponse(updatedUser);
     }
 }

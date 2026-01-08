@@ -1,6 +1,6 @@
 package com.bookhub.bookhub.controller;
 
-import com.bookhub.bookhub.dto.user.response.UserResponseDTO;
+import com.bookhub.bookhub.dto.user.response.UserResponse;
 import com.bookhub.bookhub.dto.user.request.UserUpdateRequest;
 import com.bookhub.bookhub.dto.user.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.User;
@@ -20,27 +20,27 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<UserResponseDTO> users = userService.getAllUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserCreateRequest userRequest) {
-        UserResponseDTO newUser = userService.registerUser(userRequest);
+    public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserCreateRequest userRequest) {
+        UserResponse newUser = userService.registerUser(userRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest userDetails) {
-        UserResponseDTO updatedUser = userService.updateUser(id, userDetails);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest userDetails) {
+        UserResponse updatedUser = userService.updateUser(id, userDetails);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -51,15 +51,15 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<UserResponseDTO> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<UserResponse> getUserByEmail(@PathVariable String email) {
         return userService.getUserByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{id}/role")
-    public ResponseEntity<UserResponseDTO> changeUserRole(@PathVariable Long id, @RequestParam User.Role role) {
-        UserResponseDTO updatedUser = userService.changeUserRole(id, role);
+    public ResponseEntity<UserResponse> changeUserRole(@PathVariable Long id, @RequestParam User.Role role) {
+        UserResponse updatedUser = userService.changeUserRole(id, role);
         return ResponseEntity.ok(updatedUser);
     }
 

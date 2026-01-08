@@ -1,5 +1,7 @@
 package com.bookhub.bookhub.controller;
 
+import com.bookhub.bookhub.dto.UserResponseDTO;
+import com.bookhub.bookhub.dto.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.User;
 import com.bookhub.bookhub.service.UserService;
 import jakarta.validation.Valid;
@@ -30,8 +32,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@Valid @RequestBody User user) {
-        User newUser = userService.registerUser(user);
+    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserCreateRequest userRequest) {
+        UserResponseDTO newUser = userService.registerUser(userRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 

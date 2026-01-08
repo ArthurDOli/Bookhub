@@ -1,8 +1,11 @@
 package com.bookhub.bookhub.service.impl;
 
+import com.bookhub.bookhub.dto.UserResponseDTO;
+import com.bookhub.bookhub.dto.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.Loan;
 import com.bookhub.bookhub.entity.User;
 import com.bookhub.bookhub.exception.ResourceNotFoundException;
+import com.bookhub.bookhub.factory.UserFactory;
 import com.bookhub.bookhub.repository.UserRepository;
 import com.bookhub.bookhub.service.UserService;
 import jakarta.validation.Valid;
@@ -18,26 +21,33 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserFactory userFactory;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserFactory userFactory) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userFactory = userFactory;
     }
 
     @Override
-    public User registerUser(@Valid User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
+    public UserResponseDTO registerUser(UserCreateRequest userRequest) {
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new IllegalArgumentException("E-mail already registered");
         }
 
-        if (user.getRole() == null) {
-            user.setRole(User.Role.READER);
-        }
+        User user = userFactory.createUser(
+                userRequest.getName(),
+                userRequest.getEmail(),
+                userRequest.getPassword(),
+                userRequest.getRole()
+        );
 
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        return new UserResponseDTO(savedUser);
     }
 
     @Override

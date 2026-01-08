@@ -1,12 +1,14 @@
 package com.bookhub.bookhub.service;
 
+import com.bookhub.bookhub.dto.UserResponseDTO;
+import com.bookhub.bookhub.dto.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.User;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    User registerUser(User user);
+    UserResponseDTO registerUser(UserCreateRequest user);
     User updateUser(Long id, User userDetails);
     void deleteUser(Long id);
     Optional<User> getUserById(Long id);

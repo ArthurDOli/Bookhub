@@ -35,12 +35,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("E-mail already registered");
         }
 
-        User user = userFactory.createUser(
-                userRequest.getName(),
-                userRequest.getEmail(),
-                userRequest.getPassword(),
-                userRequest.getRole()
-        );
+        User user = userFactory.createFromRequest(userRequest);
 
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);

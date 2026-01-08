@@ -1,4 +1,4 @@
-package com.bookhub.bookhub.dto;
+package com.bookhub.bookhub.dto.user.response;
 
 import com.bookhub.bookhub.entity.User;
 import lombok.Data;

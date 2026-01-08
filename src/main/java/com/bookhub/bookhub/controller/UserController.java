@@ -1,8 +1,8 @@
 package com.bookhub.bookhub.controller;
 
-import com.bookhub.bookhub.dto.UserResponseDTO;
-import com.bookhub.bookhub.dto.UserUpdateDTO;
-import com.bookhub.bookhub.dto.request.UserCreateRequest;
+import com.bookhub.bookhub.dto.user.response.UserResponseDTO;
+import com.bookhub.bookhub.dto.user.request.UserUpdateRequest;
+import com.bookhub.bookhub.dto.user.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.User;
 import com.bookhub.bookhub.service.UserService;
 import jakarta.validation.Valid;
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userDetails) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest userDetails) {
         UserResponseDTO updatedUser = userService.updateUser(id, userDetails);
         return ResponseEntity.ok(updatedUser);
     }

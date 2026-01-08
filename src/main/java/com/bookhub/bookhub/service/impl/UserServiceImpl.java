@@ -1,15 +1,14 @@
 package com.bookhub.bookhub.service.impl;
 
-import com.bookhub.bookhub.dto.UserResponseDTO;
-import com.bookhub.bookhub.dto.UserUpdateDTO;
-import com.bookhub.bookhub.dto.request.UserCreateRequest;
+import com.bookhub.bookhub.dto.user.response.UserResponseDTO;
+import com.bookhub.bookhub.dto.user.request.UserUpdateRequest;
+import com.bookhub.bookhub.dto.user.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.Loan;
 import com.bookhub.bookhub.entity.User;
 import com.bookhub.bookhub.exception.ResourceNotFoundException;
 import com.bookhub.bookhub.factory.UserFactory;
 import com.bookhub.bookhub.repository.UserRepository;
 import com.bookhub.bookhub.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO updateUser(Long id, UserUpdateDTO userDetails) {
+    public UserResponseDTO updateUser(Long id, UserUpdateRequest userDetails) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
 

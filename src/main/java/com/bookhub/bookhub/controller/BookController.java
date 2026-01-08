@@ -1,5 +1,8 @@
 package com.bookhub.bookhub.controller;
 
+import com.bookhub.bookhub.dto.book.request.BookCreateRequest;
+import com.bookhub.bookhub.dto.book.request.BookUpdateRequest;
+import com.bookhub.bookhub.dto.book.response.BookResponse;
 import com.bookhub.bookhub.entity.Book;
 import com.bookhub.bookhub.service.BookService;
 import jakarta.validation.Valid;
@@ -17,27 +20,27 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
-        List<Book> books = bookService.getAllBooks();
+    public ResponseEntity<List<BookResponse>> getAllBooks() {
+        List<BookResponse> books = bookService.getAllBooks();
         return ResponseEntity.ok(books);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+    public ResponseEntity<BookResponse> getBookById(@PathVariable Long id) {
         return bookService.getBookById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
-        Book createdBook = bookService.createBook(book);
+    public ResponseEntity<BookResponse> createBook(@Valid @RequestBody BookCreateRequest bookRequest) {
+        BookResponse createdBook = bookService.createBook(bookRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBook);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @Valid @RequestBody Book bookDetails) {
-        Book updatedBook = bookService.updateBook(id, bookDetails);
+    public ResponseEntity<BookResponse> updateBook(@PathVariable Long id, @Valid @RequestBody BookUpdateRequest bookDetails) {
+        BookResponse updatedBook = bookService.updateBook(id, bookDetails);
         return ResponseEntity.ok(updatedBook);
     }
 
@@ -48,19 +51,19 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Book>> searchBooks(@RequestParam String keyword) {
-        List<Book> books = bookService.searchBooks(keyword);
+    public ResponseEntity<List<BookResponse>> searchBooks(@RequestParam String keyword) {
+        List<BookResponse> books = bookService.searchBooks(keyword);
         return ResponseEntity.ok(books);
     }
 
     @GetMapping("/author/{author}")
-    public ResponseEntity<List<Book>> getBooksByAuthor(@PathVariable String author) {
-        List<Book> books = bookService.getBooksByAuthor(author);
+    public ResponseEntity<List<BookResponse>> getBooksByAuthor(@PathVariable String author) {
+        List<BookResponse> books = bookService.getBooksByAuthor(author);
         return ResponseEntity.ok(books);
     }
 
     @GetMapping("/isbn/{isbn}")
-    public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
+    public ResponseEntity<BookResponse> getBookByIsbn(@PathVariable String isbn) {
         return bookService.getBookByIsbn(isbn)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

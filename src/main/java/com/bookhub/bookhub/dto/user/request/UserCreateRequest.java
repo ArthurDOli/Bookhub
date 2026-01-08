@@ -1,4 +1,4 @@
-package com.bookhub.bookhub.dto.request;
+package com.bookhub.bookhub.dto.user.request;
 
 import com.bookhub.bookhub.entity.User;
 import jakarta.validation.constraints.Email;

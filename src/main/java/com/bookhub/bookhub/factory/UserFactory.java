@@ -1,6 +1,6 @@
 package com.bookhub.bookhub.factory;
 
-import com.bookhub.bookhub.dto.request.UserCreateRequest;
+import com.bookhub.bookhub.dto.user.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.User;
 import org.springframework.stereotype.Component;
 

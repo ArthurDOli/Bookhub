@@ -1,8 +1,12 @@
 package com.bookhub.bookhub.service.impl;
 
+import com.bookhub.bookhub.dto.UserResponseDTO;
+import com.bookhub.bookhub.dto.UserUpdateDTO;
+import com.bookhub.bookhub.dto.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.Loan;
 import com.bookhub.bookhub.entity.User;
 import com.bookhub.bookhub.exception.ResourceNotFoundException;
+import com.bookhub.bookhub.factory.UserFactory;
 import com.bookhub.bookhub.repository.UserRepository;
 import com.bookhub.bookhub.service.UserService;
 import jakarta.validation.Valid;
@@ -18,47 +22,47 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserFactory userFactory;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserFactory userFactory) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userFactory = userFactory;
     }
 
     @Override
-    public User registerUser(@Valid User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
+    public UserResponseDTO registerUser(UserCreateRequest userRequest) {
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new IllegalArgumentException("E-mail already registered");
         }
 
-        if (user.getRole() == null) {
-            user.setRole(User.Role.READER);
-        }
+        User user = userFactory.createFromRequest(userRequest);
 
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        return new UserResponseDTO(savedUser);
     }
 
-    public User updateUser(Long id, User userDetails) {
+    @Override
+    public UserResponseDTO updateUser(Long id, UserUpdateDTO userDetails) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
 
-        if (userDetails.getEmail() != null &&
-            !userDetails.getEmail().equals(user.getEmail())) {
-            throw new IllegalArgumentException("Email can't be altered");
+        if (userDetails.getName() != null && !userDetails.getName().trim().isEmpty()) {
+            user.setName(userDetails.getName().trim());
         }
 
-        if (userDetails.getName() != null) {
-            user.setName(userDetails.getName());
-        }
-
-        if (userDetails.getPassword() != null) {
+        if (userDetails.getPassword() != null && !userDetails.getPassword().trim().isEmpty()) {
             String encryptedPassword = passwordEncoder.encode(userDetails.getPassword());
             user.setPassword(encryptedPassword);
         }
 
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+
+        return new UserResponseDTO(updatedUser);
     }
 
     @Override
@@ -77,18 +81,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserResponseDTO> getUserById(Long id) {
+        return userRepository.findById(id)
+                .map(UserResponseDTO::new);
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Optional<UserResponseDTO> getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(UserResponseDTO::new);
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(UserResponseDTO::new)
+                .toList();
     }
 
     @Override
@@ -97,12 +105,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changeUserRole(Long userId, User.Role newRole) {
+    public UserResponseDTO changeUserRole(Long userId, User.Role newRole) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
 
         user.setRole(newRole);
 
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+
+        return new UserResponseDTO(updatedUser);
     }
 }

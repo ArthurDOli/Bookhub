@@ -1,5 +1,6 @@
 package com.bookhub.bookhub.factory;
 
+import com.bookhub.bookhub.dto.request.UserCreateRequest;
 import com.bookhub.bookhub.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -53,5 +54,18 @@ public class UserFactory {
 
     public User createLibrarian(String name, String email, String password) {
         return createUser(name, email, password, User.Role.LIBRARIAN);
+    }
+
+    public User createFromRequest(UserCreateRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Request cannot be null");
+        }
+
+        return createUser(
+                request.getName(),
+                request.getEmail(),
+                request.getPassword(),
+                request.getRole()
+        );
     }
 }

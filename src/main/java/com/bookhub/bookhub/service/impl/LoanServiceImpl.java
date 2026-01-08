@@ -1,5 +1,7 @@
 package com.bookhub.bookhub.service.impl;
 
+import com.bookhub.bookhub.dto.loan.request.LoanCreateRequest;
+import com.bookhub.bookhub.dto.loan.response.LoanResponse;
 import com.bookhub.bookhub.entity.Book;
 import com.bookhub.bookhub.entity.Loan;
 import com.bookhub.bookhub.entity.User;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -28,19 +31,21 @@ public class LoanServiceImpl implements LoanService {
     private final LoanFactory loanFactory;
 
     @Override
-    public Loan createLoan(Long userId, Long bookId, int loanDays) {
-        validateLoanDays(loanDays);
+    public LoanResponse createLoan(LoanCreateRequest loanRequest) {
+        validateLoanDays(loanRequest.getLoanDays());
 
-        User user = findUser(userId);
-        Book book = findBook(bookId);
+        User user = findUser(loanRequest.getUserId());
+        Book book = findBook(loanRequest.getBookId());
 
         validationService.validateUserCanBorrow(user);
         validateBookAvailable(book);
 
-        Loan loan = loanFactory.createLoan(user, book, loanDays);
+        Loan loan = loanFactory.createLoan(user, book, loanRequest.getLoanDays());
         book.borrow();
 
-        return loanRepository.save(loan);
+        Loan savedLoan = loanRepository.save(loan);
+
+        return new LoanResponse(savedLoan);
     }
 
     private void validateLoanDays(int loanDays) {
@@ -70,14 +75,13 @@ public class LoanServiceImpl implements LoanService {
 
 
     @Override
-    public Loan returnLoan(Long loanId) {
+    public LoanResponse returnLoan(Long loanId) {
         Loan loan = findLoan(loanId);
-
         validateLoanCanBeReturned(loan);
-
         processReturn(loan);
 
-        return loanRepository.save(loan);
+        Loan returnedLoan = loanRepository.save(loan);
+        return new LoanResponse(returnedLoan);
     }
 
     private Loan findLoan(Long loanId) {
@@ -104,7 +108,7 @@ public class LoanServiceImpl implements LoanService {
 
 
     @Override
-    public Loan extendLoan(Long loanId, int additionalDays) {
+    public LoanResponse extendLoan(Long loanId, int additionalDays) {
         validateAdditionalDays(additionalDays);
 
         Loan loan = findLoan(loanId);
@@ -112,7 +116,9 @@ public class LoanServiceImpl implements LoanService {
 
         processExtension(loan, additionalDays);
 
-        return loanRepository.save(loan);
+        Loan extendedLoan = loanRepository.save(loan);
+
+        return new LoanResponse(extendedLoan);
     }
 
     private void validateAdditionalDays(int additionalDays) {
@@ -157,15 +163,21 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<Loan> getActiveLoansByUser(Long userId) {
+    public List<LoanResponse> getActiveLoansByUser(Long userId) {
         User user = findUser(userId);
 
-        return loanRepository.findByUserIdAndStatus(userId, Loan.LoanStatus.ACTIVE);
+        return loanRepository.findByUserIdAndStatus(userId, Loan.LoanStatus.ACTIVE)
+                .stream()
+                .map(LoanResponse::new)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Loan> getOverdueLoans() {
-        return loanRepository.findByStatus(Loan.LoanStatus.OVERDUE);
+    public List<LoanResponse> getOverdueLoans() {
+        return loanRepository.findByStatus(Loan.LoanStatus.OVERDUE)
+                .stream()
+                .map(LoanResponse::new)
+                .collect(Collectors.toList());
     }
 
     @Override

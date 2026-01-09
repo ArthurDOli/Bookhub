@@ -95,26 +95,37 @@ public class GoogleBooksService {
     @Transactional
     public BookResponse importBookToLibrary(String googleBookId, int totalCopies) {
         GoogleBookItemResponse googleBook = getBookById(googleBookId);
-        GoogleBookItemResponse.VolumeInfo volumeInfo = googleBook.getVolumeInfo();
+        String isbn = extractIsbn(googleBook.getVolumeInfo());
 
-        String isbn = extractIsbn(volumeInfo);
-
-        if (isbn != null && bookRepository.findById(isbn).isPresent()) {
-            Book existingBook = bookRepository.findByIsbn(isbn).get();
-            existingBook.setTotalCopies(existingBook.getTotalCopies() + totalCopies);
-            existingBook.setAvailableCopies(existingBook.getAvailableCopies() + totalCopies);
-            Book updated = bookRepository.save(existingBook);
-            return new BookResponse(updated);
+        if (isbn != null) {
+            return  importExistingOrCreateNew(googleBook, isbn, totalCopies);
         }
 
-        String title = volumeInfo.getTitle();
-        String author = extractAuthors(volumeInfo);
-        Integer year = extractPublicationYear(volumeInfo);
+        return createBookFromGoogle(googleBook, totalCopies);
+    }
+
+    private BookResponse importExistingOrCreateNew(GoogleBookItemResponse googleBook, String isbn, int totalCopies) {
+        return bookRepository.findByIsbn(isbn)
+                .map(book -> incrementBookCopies(book, totalCopies))
+                .orElseGet(() -> createBookFromGoogle(googleBook, totalCopies));
+    }
+
+    private BookResponse incrementBookCopies(Book book, int totalCopies) {
+        book.setTotalCopies(book.getTotalCopies() + totalCopies);
+        book.setAvailableCopies(book.getAvailableCopies() + totalCopies);
+        return new BookResponse(bookRepository.save(book));
+    }
+
+    private BookResponse createBookFromGoogle(GoogleBookItemResponse googleBook, int totalCopies) {
+        GoogleBookItemResponse.VolumeInfo info = googleBook.getVolumeInfo();
+
+        String title = info.getTitle();
+        String author = extractAuthors(info);
+        String isbn = extractIsbn(info);
+        String year = extractPublicationYear(info);
 
         Book book = bookFactory.createBookWithCopies(title, author, isbn, year, totalCopies);
-        Book saved = bookRepository.save(book);
-
-        return new BookResponse(saved);
+        return new BookResponse(bookRepository.save(book));
     }
 
     private String extractIsbn(GoogleBookItemResponse.VolumeInfo volumeInfo) {

@@ -2,6 +2,7 @@ package com.bookhub.bookhub.service.external;
 
 import com.bookhub.bookhub.dto.google.GoogleBookItemResponse;
 import com.bookhub.bookhub.exception.ExternalServiceException;
+import com.bookhub.bookhub.exception.ResourceNotFoundException;
 import com.bookhub.bookhub.factory.BookFactory;
 import com.bookhub.bookhub.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,22 +41,46 @@ public class GoogleBooksService {
             );
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                List<GoogleBookItemResponse> items = response.getBody().getItems();
-
-                if (items == null) {
-                    return Collections.emptyList();
-                }
-
-                return items;
+                throw new ExternalServiceException(
+                        "Google Books API returned non-OK response: " + response.getStatusCode()
+                );
             }
 
-            throw new ExternalServiceException(
-                    "Google Books API returned non-OK response: " + response.getStatusCode()
-            );
+            List<GoogleBookItemResponse> items = response.getBody().getItems();
+
+            if (items == null) {
+                return Collections.emptyList();
+            }
+
+            return items;
+
         } catch (HttpClientErrorException e) {
             throw new ExternalServiceException("Google Books API error: " + e.getMessage(), e);
         } catch (Exception e) {
             throw new ExternalServiceException("Failed to search books: " + e.getMessage(), e);
+        }
+    }
+
+    public GoogleBookItemResponse getBookById(String googleBookId) {
+        try {
+            String url = baseUrl + "/volumes/" + googleBookId + "?key=" + apiKey;
+
+            ResponseEntity<GoogleBookItemResponse> response = restTemplate.getForEntity(
+                    url, GoogleBookItemResponse.class
+            );
+
+            if (response.getStatusCode() != HttpStatus.OK && response.getBody() != null) {
+                throw new ResourceNotFoundException("Book not found in Google Books: " + googleBookId);
+            }
+
+            return response.getBody();
+
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new ResourceNotFoundException("Book not found in Google Books: " + googleBookId);
+        } catch (HttpClientErrorException e) {
+            throw new ExternalServiceException("Error fetching book: " + e.getMessage());
+        } catch (Exception e) {
+            throw new ExternalServiceException("Failed to fetch book: " + e.getMessage());
         }
     }
 

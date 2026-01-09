@@ -17,5 +17,10 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+google:
+  books:
+    api-key: ${GOOGLE_BOOKS_API_KEY:}
+    base-url: https://www.googleapis.com/books/v1
+
 server:
   port: 8080

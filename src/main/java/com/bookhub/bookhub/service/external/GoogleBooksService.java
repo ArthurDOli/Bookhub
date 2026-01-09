@@ -2,6 +2,8 @@ package com.bookhub.bookhub.service.external;
 
 import com.bookhub.bookhub.dto.google.GoogleBookItemResponse;
 import com.bookhub.bookhub.exception.ExternalServiceException;
+import com.bookhub.bookhub.factory.BookFactory;
+import com.bookhub.bookhub.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -19,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GoogleBooksService {
     private final RestTemplate restTemplate;
+    private final BookRepository bookRepository;
+    private final BookFactory bookFactory;
 
     @Value("${google.books.api-key}")
     private String apiKey;
@@ -35,7 +40,13 @@ public class GoogleBooksService {
             );
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                return response.getBody().getItems();
+                List<GoogleBookItemResponse> items = response.getBody().getItems();
+
+                if (items == null) {
+                    return Collections.emptyList();
+                }
+
+                return items;
             }
 
             throw new ExternalServiceException(

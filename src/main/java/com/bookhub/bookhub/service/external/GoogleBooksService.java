@@ -44,7 +44,7 @@ public class GoogleBooksService {
                     url, GoogleBooksSearchResponse.class
             );
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
                 throw new ExternalServiceException(
                         "Google Books API returned non-OK response: " + response.getStatusCode()
                 );
@@ -77,7 +77,7 @@ public class GoogleBooksService {
                     url, GoogleBookItemResponse.class
             );
 
-            if (response.getStatusCode() != HttpStatus.OK && response.getBody() != null) {
+            if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
                 throw new ResourceNotFoundException("Book not found in Google Books: " + googleBookId);
             }
 
@@ -122,7 +122,7 @@ public class GoogleBooksService {
         String title = info.getTitle();
         String author = extractAuthors(info);
         String isbn = extractIsbn(info);
-        String year = extractPublicationYear(info);
+        Integer year = extractPublicationYear(info);
 
         Book book = bookFactory.createBookWithCopies(title, author, isbn, year, totalCopies);
         return new BookResponse(bookRepository.save(book));

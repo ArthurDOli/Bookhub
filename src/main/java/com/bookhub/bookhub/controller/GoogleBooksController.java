@@ -32,7 +32,7 @@ public class GoogleBooksController {
 
     @PostMapping("/import/{googleBookId}")
     public ResponseEntity<BookResponse> importBook(
-            @PathVariable int googleBookId,
+            @PathVariable String googleBookId,
             @RequestParam(defaultValue = "1") int totalCopies
     ) {
         BookResponse book = googleBooksService.importBookToLibrary(googleBookId, totalCopies);

@@ -9,7 +9,7 @@ public class BookUpdateRequest {
     @Size(min = 1, max = 200, message = "Title must be between 1 and 200 characters")
     private String title;
 
-    @Size(min = 1, max = 200, message = "Author must be between 1 and 100 characters")
+    @Size(min = 1, max = 200, message = "Author must be between 1 and 200 characters")
     private String author;
 
     @Min(value = 0, message = "Publication year cannot be negative")

@@ -3,7 +3,6 @@ package com.bookhub.bookhub.controller;
 import com.bookhub.bookhub.dto.book.request.BookCreateRequest;
 import com.bookhub.bookhub.dto.book.request.BookUpdateRequest;
 import com.bookhub.bookhub.dto.book.response.BookResponse;
-import com.bookhub.bookhub.entity.Book;
 import com.bookhub.bookhub.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

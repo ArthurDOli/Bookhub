@@ -51,7 +51,7 @@ public class GoogleBooksController {
     }
 
     @PostMapping("/import/{googleBookId}")
-    @Operation(summary = "Important book from Google Books",
+    @Operation(summary = "Import a book from Google Books",
             description = "Import a book from Google Books into the local library. If the book already exists (by ISBN), it increments the copy count instead."
     )
     public ResponseEntity<BookResponse> importBook(

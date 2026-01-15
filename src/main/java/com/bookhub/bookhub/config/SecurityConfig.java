@@ -1,5 +1,6 @@
 package com.bookhub.bookhub.config;
 
+import com.bookhub.bookhub.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +41,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -55,13 +57,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/loans/**").hasRole("LIBRARIAN")
                         .requestMatchers("/api/loans/**").hasRole("LIBRARIAN")
 
-                        .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers("/api/users/**").hasRole("LIBRARIAN")
 
                         .requestMatchers("/api/google-books/**").hasRole("LIBRARIAN")
 
                         .anyRequest().authenticated()
-                ).httpBasic(basic -> basic.disable());
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

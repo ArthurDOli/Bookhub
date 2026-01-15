@@ -1,4 +1,4 @@
-package com.bookhub.bookhub;intelliJ rodando, 7 abas
+package com.bookhub.bookhub;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

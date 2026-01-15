@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/loans/**").hasRole("LIBRARIAN")
                         .requestMatchers("/api/loans/**").hasRole("LIBRARIAN")
 
+                        .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers("/api/users/**").hasRole("LIBRARIAN")
 
                         .requestMatchers("/api/google-books/**").hasRole("LIBRARIAN")

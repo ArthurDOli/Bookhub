@@ -4,6 +4,7 @@ import com.bookhub.bookhub.dto.auth.request.LoginRequest;
 import com.bookhub.bookhub.dto.auth.response.AuthResponse;
 import com.bookhub.bookhub.entity.User;
 import com.bookhub.bookhub.repository.UserRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,7 +41,7 @@ public class AuthService {
         return (UserDetails) authentication.getPrincipal();
     }
 
-    private String generateTokenForUser(UserDetails userDetails) {
+    private String generateTokenForUser(@NotNull UserDetails userDetails) {
         return jwtService.generateToken(userDetails);
     }
 

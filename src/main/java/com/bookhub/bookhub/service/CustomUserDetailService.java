@@ -26,7 +26,7 @@ public class CustomUserDetailService implements UserDetailsService {
             throw new IllegalStateException("User role cannot be null");
         }
 
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().toString());
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),

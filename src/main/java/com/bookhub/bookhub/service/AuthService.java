@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthenticationManager authenticationManager;
@@ -22,24 +21,34 @@ public class AuthService {
     private final UserRepository userRepository;
 
     public AuthResponse authenticate(LoginRequest loginRequest) {
+        UserDetails userDetails = authenticateAndGetUserDetails(loginRequest);
+        String jwtToken = generateTokenForUser(userDetails);
+        User user = fetchUserFromDatabase(loginRequest.getEmail());
+
+        return buildAuthResponse(jwtToken, user);
+    }
+
+    private UserDetails authenticateAndGetUserDetails(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
+                        request.getEmail(),
+                        request.getPassword()
                 )
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        return (UserDetails) authentication.getPrincipal();
+    }
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    private String generateTokenForUser(UserDetails userDetails) {
+        return jwtService.generateToken(userDetails);
+    }
 
-        String jwtToken = jwtService.generateToken(userDetails);
-
-        User user = userRepository.findByEmail(userDetails.getUsername())
+    private User fetchUserFromDatabase(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException(
-                        "User not found after authentication: " + userDetails.getUsername()));
-
-        return buildAuthResponse(jwtToken, user);
+                        "User not found after authentication:" + email
+                ));
     }
 
     private AuthResponse buildAuthResponse(String token, User user) {
